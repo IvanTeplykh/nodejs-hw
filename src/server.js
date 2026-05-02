@@ -8,14 +8,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(
-  pinoHttp({
-    transport: {
-      target: 'pino-pretty',
-    },
-  }),
-);
+const logger = pinoHttp({
+  transport: {
+    target: 'pino-pretty',
+  },
+});
 
+app.use(logger);
 app.use(cors());
 app.use(express.json());
 
@@ -26,7 +25,7 @@ app.get('/notes', (req, res) => {
 
 app.get('/notes/:noteId', (req, res) => {
   req.log.info(`GET /notes/${req.params.noteId}`);
-  res.json({ message: 'Retrieved note with ID: id_param' });
+  res.json({ message: `Retrieved note with ID: ${req.params.noteId}` });
 });
 
 app.get('/test-error', () => {
