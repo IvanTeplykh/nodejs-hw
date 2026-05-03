@@ -34,12 +34,12 @@ app.get('/test-error', () => {
 
 app.use((req, res, next) => {
   req.log.error('404');
-  res.status(404).send('Route not found');
+  res.status(404).json({ message: 'Route not found' });
 });
 
 app.use((err, req, res, next) => {
   req.log.error(err);
-  res.status(500).json({ error: err.message });
+  res.status(500).json({ message: err.message });
 });
 
 app.listen(PORT, () => {
