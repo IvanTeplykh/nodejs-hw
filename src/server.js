@@ -1,46 +1,32 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
-import pinoHttp from 'pino-http';
+import connectMongoDB from './db/connectMongoDB.js';
+import logger from './middleware/logger.js';
+import notFoundHandler from './middleware/notFoundHandler.js';
+import errorHandler from './middleware/errorHandler.js';
+import notesRoutes from './routes/notesRoutes.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const logger = pinoHttp({
-  transport: {
-    target: 'pino-pretty',
-  },
-});
+connectMongoDB();
 
 app.use(logger);
 app.use(cors());
 app.use(express.json());
 
-app.get('/notes', (req, res) => {
-  req.log.info(`GET /notes`);
-  res.json({ message: 'Retrieved all notes' });
-});
-
-app.get('/notes/:noteId', (req, res) => {
-  req.log.info(`GET /notes/${req.params.noteId}`);
-  res.json({ message: `Retrieved note with ID: ${req.params.noteId}` });
-});
+app.use('/notes', notesRoutes);
 
 app.get('/test-error', () => {
   throw new Error('Simulated server error');
 });
 
-app.use((req, res, next) => {
-  req.log.error('404');
-  res.status(404).json({ message: 'Route not found' });
-});
+app.use(notFoundHandler);
 
-app.use((err, req, res, next) => {
-  req.log.error(err);
-  res.status(500).json({ message: err.message });
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
