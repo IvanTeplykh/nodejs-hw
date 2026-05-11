@@ -1,52 +1,45 @@
 import Note from '../models/note.js';
+import createError from 'http-errors';
 
-const getAllNotes = async (req, res) => {
-  try {
-    const notes = await Note.find(req.query);
-    res.json(notes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+const getAllNotes = async (req, res, next) => {
+  const notes = await Note.find(req.query);
+  res.json(notes);
 };
 
-const getNoteById = async (req, res) => {
-  try {
-    const note = await Note.findById(req.params.id);
-    res.json(note);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+const getNoteById = async (req, res, next) => {
+  const note = await Note.findById(req.params.noteId);
+  if (!note) {
+    throw createError(404, 'Note not found');
   }
+  res.json(note);
 };
 
-const createNote = async (req, res) => {
+const createNote = async (req, res, next) => {
   const note = new Note(req.body);
-
-  try {
-    const savedNote = await note.save();
-    res.status(201).json(savedNote);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+  const savedNote = await note.save();
+  res.status(201).json(savedNote);
 };
 
-const updateNote = async (req, res) => {
-  try {
-    const updatedNote = await Note.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(updatedNote);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+const updateNote = async (req, res, next) => {
+  const updatedNote = await Note.findByIdAndUpdate(
+    req.params.noteId,
+    req.body,
+    {
+      returnDocument: 'after',
+    },
+  );
+  if (!updatedNote) {
+    throw createError(404, 'Note not found');
   }
+  res.json(updatedNote);
 };
 
-const deleteNote = async (req, res) => {
-  try {
-    const deletedNote = await Note.findByIdAndDelete(req.params.id);
-    res.json(deletedNote);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+const deleteNote = async (req, res, next) => {
+  const deletedNote = await Note.findByIdAndDelete(req.params.noteId);
+  if (!deletedNote) {
+    throw createError(404, 'Note not found');
   }
+  res.json(deletedNote);
 };
 
 export { getAllNotes, getNoteById, createNote, updateNote, deleteNote };
