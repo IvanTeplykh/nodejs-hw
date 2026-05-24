@@ -11,6 +11,7 @@ const noteSchema = new Schema(
       enum: TAGS,
       default: TAGS.find((tag) => tag === 'Todo'),
     },
+    userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
   },
   { timestamps: true },
 );
