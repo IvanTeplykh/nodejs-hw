@@ -36,11 +36,15 @@ const getAllNotes = async (req, res, next) => {
     const totalPages = Math.ceil(totalNotes / itemsPerPage);
 
     res.status(200).json({
-      page: pageNumber,
-      perPage: itemsPerPage,
-      totalNotes,
-      totalPages,
-      notes,
+      status: 200,
+      message: 'Successfully found notes!',
+      data: {
+        page: pageNumber,
+        perPage: itemsPerPage,
+        totalNotes,
+        totalPages,
+        notes,
+      }
     });
   } catch (error) {
     next(error);
@@ -53,7 +57,11 @@ const getNoteById = async (req, res, next) => {
     if (!note) {
       throw createError(404, 'Note not found');
     }
-    res.json(note);
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully found note!',
+      data: note
+    });
   } catch (error) {
     next(error);
   }
@@ -63,7 +71,11 @@ const createNote = async (req, res, next) => {
   try {
     const note = new Note({ ...req.body, userId: req.user._id });
     const savedNote = await note.save();
-    res.status(201).json(savedNote);
+    res.status(201).json({
+      status: 201,
+      message: 'Successfully created a note!',
+      data: savedNote
+    });
   } catch (error) {
     next(error);
   }
@@ -81,7 +93,11 @@ const updateNote = async (req, res, next) => {
     if (!updatedNote) {
       throw createError(404, 'Note not found');
     }
-    res.json(updatedNote);
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully updated a note!',
+      data: updatedNote
+    });
   } catch (error) {
     next(error);
   }
@@ -93,7 +109,7 @@ const deleteNote = async (req, res, next) => {
     if (!deletedNote) {
       throw createError(404, 'Note not found');
     }
-    res.json(deletedNote);
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

@@ -16,11 +16,10 @@ userSchema.methods.toJSON = function () {
   return user;
 };
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function () {
   if (this.isNew && !this.username) {
     this.username = this.email;
   }
-  next();
 });
 
 const User = mongoose.model('User', userSchema);
