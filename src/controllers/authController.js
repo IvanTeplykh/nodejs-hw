@@ -19,11 +19,7 @@ export const registerUser = async (req, res, next) => {
     const session = await createSession(user._id);
     setSessionCookies(res, session);
 
-    res.status(201).json({
-      status: 201,
-      message: 'Successfully registered a user!',
-      data: user,
-    });
+    res.status(201).json(user);
   } catch (error) {
     next(error);
   }
@@ -47,13 +43,7 @@ export const loginUser = async (req, res, next) => {
     const session = await createSession(user._id);
     setSessionCookies(res, session);
 
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully logged in an user!',
-      data: {
-        accessToken: session.accessToken,
-      },
-    });
+    res.status(200).json(user);
   } catch (error) {
     next(error);
   }
@@ -85,11 +75,7 @@ export const refreshUserSession = async (req, res, next) => {
     setSessionCookies(res, newSession);
 
     res.status(200).json({
-      status: 200,
-      message: 'Successfully refreshed a session!',
-      data: {
-        accessToken: newSession.accessToken,
-      },
+      message: 'Session refreshed'
     });
   } catch (error) {
     next(error);
