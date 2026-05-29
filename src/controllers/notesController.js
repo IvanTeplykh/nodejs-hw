@@ -8,7 +8,7 @@ const getAllNotes = async (req, res, next) => {
   const itemsPerPage = parseInt(perPage, 10);
   const skip = (pageNumber - 1) * itemsPerPage;
 
-  const myQuery = Note.find();
+  const myQuery = Note.find({ userId: req.user._id });
 
   if (tag) {
     myQuery.where('tag').equals(tag);
@@ -44,7 +44,7 @@ const getAllNotes = async (req, res, next) => {
 };
 
 const getNoteById = async (req, res, next) => {
-  const note = await Note.findById(req.params.noteId);
+  const note = await Note.findOne({ _id: req.params.noteId, userId: req.user._id });
   if (!note) {
     throw createError(404, 'Note not found');
   }
@@ -52,14 +52,14 @@ const getNoteById = async (req, res, next) => {
 };
 
 const createNote = async (req, res, next) => {
-  const note = new Note(req.body);
+  const note = new Note({ ...req.body, userId: req.user._id });
   const savedNote = await note.save();
   res.status(201).json(savedNote);
 };
 
 const updateNote = async (req, res, next) => {
-  const updatedNote = await Note.findByIdAndUpdate(
-    req.params.noteId,
+  const updatedNote = await Note.findOneAndUpdate(
+    { _id: req.params.noteId, userId: req.user._id },
     req.body,
     {
       returnDocument: 'after',
@@ -72,7 +72,7 @@ const updateNote = async (req, res, next) => {
 };
 
 const deleteNote = async (req, res, next) => {
-  const deletedNote = await Note.findByIdAndDelete(req.params.noteId);
+  const deletedNote = await Note.findOneAndDelete({ _id: req.params.noteId, userId: req.user._id });
   if (!deletedNote) {
     throw createError(404, 'Note not found');
   }
