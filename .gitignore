@@ -120,3 +120,6 @@ dist/
 
 # Windows
 Thumbs.db
+
+# Bruno
+bruno/
