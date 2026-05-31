@@ -15,7 +15,7 @@ export const saveFileToCloudinary = (buffer, userId) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: 'avatars',
-        resource_type: 'auto',
+        resource_type: 'image',
         public_id: String(userId),
         overwrite: true,
         unique_filename: false,
@@ -23,7 +23,7 @@ export const saveFileToCloudinary = (buffer, userId) => {
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
-      }
+      },
     );
 
     Readable.from(buffer).pipe(uploadStream);
